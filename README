@@ -1,0 +1,14 @@
+Simple chessboard in opengl in C
+
+- compile: make
+- run: ./chessboard
+
+Move around the chessboard using the keys:
+
+             .---- forward
+            w 
+ left --- a s d --- right
+            '
+             `---- backward
+
+Tested on MacOSX 10.6.8
