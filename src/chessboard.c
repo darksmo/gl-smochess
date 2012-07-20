@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <GLUT/glut.h>
 
 #include "chessboard.h"
 

@@ -1,6 +1,11 @@
+#ifdef __APPLE__
+    #include <GLUT/glut.h>
+#else
+    #include <GL/glut.h>
+#endif
+
 #include <string.h>
 #include <stdlib.h>
-#include <GLUT/glut.h>
 
 #include "chessboard.h"
 #include "pawn.h"

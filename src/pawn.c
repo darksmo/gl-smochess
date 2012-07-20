@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <GLUT/glut.h>
 
 #include "pawn.h"
 
