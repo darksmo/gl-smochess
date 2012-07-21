@@ -14,6 +14,7 @@
 #define R 0
 #define G 1
 #define B 2
+#define A 3
 
 typedef struct {
 	GLdouble x; /* placeable */
@@ -22,10 +23,10 @@ typedef struct {
 
 	GLdouble cell_width;
 	GLdouble cell_height;
-	int ncells;
-	GLdouble color_dark[3];
-	GLdouble color_clear[3];
-	GLdouble border;
+
+	GLfloat color_dark[4];
+	GLfloat color_clear[4];
+	GLfloat color_specular[4];
 
 	Pawn **board;
 } Chessboard;

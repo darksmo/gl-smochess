@@ -7,11 +7,11 @@ Viewer* create_viewer()
 {
     Viewer *v = malloc(sizeof(Viewer));
 	v->x=0;
-	v->y=1.90;
-	v->z=3;
+	v->y=0.1;
+	v->z=1;
 	v->lookat_x = 0;
 	v->lookat_y = 0;
-	v->lookat_z = 0;
+	v->lookat_z = -0.5;
 
 	return v;
 }

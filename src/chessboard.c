@@ -4,27 +4,28 @@
 
 #include "chessboard.h"
 
-#define XXX cboard->cell_height
-
 Chessboard * create_chessboard()
 {
     Chessboard *cboard = malloc(sizeof(Chessboard));
 	cboard->x = 0;
 	cboard->y = 0;
 	cboard->z = 0;
-	cboard->ncells = NUM_CELLS;
-	cboard->border = 0;
+
 	cboard->cell_height = 1.0f / NUM_CELLS;
 	cboard->cell_width  = 1.0f / NUM_CELLS;
-	cboard->color_dark[R] = 139;
-	cboard->color_dark[G] = 69;
-	cboard->color_dark[B] = 19;
-	cboard->color_clear[R] = 255;
-	cboard->color_clear[G] = 215;
-	cboard->color_clear[B] = 0;
+	
+	/* colors */
+	cboard->color_dark[R] = 0.4f; cboard->color_dark[G] = 0.4f;
+	cboard->color_dark[B] = 0.4f; cboard->color_dark[A] = 1.0f;
 
+	cboard->color_clear[R] = 1.0f; cboard->color_clear[G] = 1.0f;
+	cboard->color_clear[B] = 1.0f; cboard->color_clear[A] = 1.0f;
+	
+	cboard->color_specular[R] = 1.0f; cboard->color_specular[G] = 1.0f;
+	cboard->color_specular[B] = 1.0f; cboard->color_specular[A] = 1.0f;
+
+	/* logical cells for the pawn */
 	cboard->board = malloc(sizeof(Pawn*) * NUM_CELLS * NUM_CELLS);
-
 	memset(cboard->board, 0, sizeof(Pawn*) * NUM_CELLS * NUM_CELLS);
 
 	return cboard;
@@ -54,7 +55,6 @@ void display_chessboard(Chessboard *cboard) {
     
 	int xcell = -1;
 	int ycell;
-    glColor3f(cboard->color_dark[R], cboard->color_dark[G], cboard->color_dark[B]);
 	GLdouble step = cboard->cell_width;
     for (x=-0.5f; x<0.5f; x+=step){
 		xcell++;
@@ -67,17 +67,23 @@ void display_chessboard(Chessboard *cboard) {
     		/* flip color */
     		color = 1 - color;
     
-    		/* choose color */
+    		/* choose material color */
     		if (color) { 
-    			glColor3ub(cboard->color_dark[R], cboard->color_dark[G],
-    				cboard->color_dark[B]);
+				glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_dark);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_dark);
+				glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
+				glMaterialf(GL_FRONT, GL_SHININESS, 60.0);
     		}
     		else {
-    			glColor3ub(cboard->color_clear[R], cboard->color_clear[G],
-    				cboard->color_clear[B]);
+				glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_clear);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_clear);
+				glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
+				glMaterialf(GL_FRONT, GL_SHININESS, 60.0);
     		}
+
     		/* draw cell */
     		glBegin(GL_QUADS);
+				glNormal3f(0.0,0.0,1.0);
     			glVertex3d(x, 0, y);
     			glVertex3d(x+step, 0, y);
     			glVertex3d(x+step, 0, y+step);

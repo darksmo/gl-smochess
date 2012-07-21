@@ -1,15 +1,18 @@
+#ifndef PAWN_h 
+#define PAWN_h
+
 #ifdef __APPLE__
     #include <GLUT/glut.h>
 #else
     #include <GL/glut.h>
 #endif
 
-#ifndef PAWN_h 
-#define PAWN_h
+#include "glm.h"
 
 #define R 0
 #define G 1
 #define B 2
+#define A 3
 
 typedef enum player_type_t {
 	PLAYER_TYPE_BLACK,
@@ -35,18 +38,17 @@ typedef struct {
 	PawnType type;
 	GLdouble width;
 	GLdouble height;
-	GLdouble color[3];
 
-	/* some vertices */
-    GLdouble va[3];
-	GLdouble vb[3];
-	GLdouble vc[3];
-	GLdouble vd[3];
-	GLdouble ve[3];
+	GLfloat color[4];
+	GLfloat color_specular[4];
+	GLfloat shininess;
+
+    /* GLMmodel */
+    GLMmodel *model;
 } Pawn;
 
-Pawn *create_pawn();
-void destroy_pawn(Pawn *cboard);
-void display_pawn(Pawn *cboard);
+Pawn * create_pawn(PawnType type, PlayerType player);
+void destroy_pawn(Pawn *pawn);
+void display_pawn(Pawn *pawn);
 
 #endif

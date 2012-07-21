@@ -3,7 +3,39 @@
 
 #include "pawn.h"
 
-Pawn * create_pawn(PawnType type, PlayerType player)
+char* _get_model_name(Pawn *pawn, PlayerType player) 
+{
+	char *model_name = NULL;
+    switch (pawn->type) {
+        case PAWN_TYPE_PAWN: 
+			model_name = "objs/pawn.obj";
+			pawn->height = 0.05;
+		break;
+        case PAWN_TYPE_ROOK: 
+			model_name = "objs/rook.obj";
+			pawn->height = 0.05;
+		break;
+        case PAWN_TYPE_KNIGHT: 
+			model_name = "objs/knight.obj";
+			pawn->height = 0.05;
+		break;
+        case PAWN_TYPE_BISHOP: 
+			model_name = "objs/bishop.obj";
+			pawn->height = 0.05;
+		break;
+        case PAWN_TYPE_QUEEN: 
+			model_name = "objs/queen.obj";
+			pawn->height = 0.05;
+		break;
+        case PAWN_TYPE_KING: 
+			model_name = "objs/king.obj";
+			pawn->height = 0.05;
+		break;
+    }
+	return model_name;
+}
+
+Pawn* create_pawn(PawnType type, PlayerType player)
 {
     Pawn *pawn = malloc(sizeof(Pawn));
 	pawn->x = 0.0f;
@@ -11,49 +43,58 @@ Pawn * create_pawn(PawnType type, PlayerType player)
 	pawn->z = 0.0f;
 	pawn->width = 0.05f;
 
+	/* pawn colors */
 	if (player == PLAYER_TYPE_BLACK) {
-		pawn->color[R] = 0;
-		pawn->color[G] = 0;
-		pawn->color[B] = 0;
+		pawn->color[R] = 0.0;
+		pawn->color[G] = 0.0;
+		pawn->color[B] = 0.0;
+		pawn->color[A] = 1.0;
 	}
 	else {
-		pawn->color[R] = 255;
-		pawn->color[G] = 255;
-		pawn->color[B] = 255;
+		pawn->color[R] = 1.0;
+		pawn->color[G] = 1.0;
+		pawn->color[B] = 1.0;
+		pawn->color[A] = 1.0;
 	}
+	pawn->shininess = 30.0;
 
 	pawn->type = type;
 	pawn->height = 0.1f + ((GLdouble)type/(GLdouble)PAWN_TYPE_COUNT);
 
-	pawn->va[0] = -1.0f; pawn->va[1] = 0.0f; pawn->va[2] =  1.0f; 
-	pawn->vb[0] =  1.0f; pawn->vb[1] = 0.0f; pawn->vb[2] =  1.0f; 
-	pawn->vc[0] =  1.0f; pawn->vc[1] = 0.0f; pawn->vc[2] = -1.0f; 
-	pawn->vd[0] = -1.0f; pawn->vd[1] = 0.0f; pawn->vd[2] = -1.0f; 
-	pawn->ve[0] =  0.0f; pawn->ve[1] = 1.0f; pawn->ve[2] =  0.0f; 
+    char *model_name = _get_model_name(pawn, player);
+
+    /* load the model in case */
+    if (model_name) {
+        pawn->model = (GLMmodel*) malloc(sizeof(GLMmodel));
+		pawn->model = glmReadOBJ(model_name);
+		glmLinearTexture(pawn->model);
+    }
 	return pawn;
 }
 
+
 void display_pawn(Pawn *pawn) {
     glPushMatrix();
-    
-    glColor3d(pawn->color[R], pawn->color[G], pawn->color[B]);
 
     /* draw pawn*/
     glTranslated(pawn->x, pawn->y, pawn->z);
 	glScalef(pawn->width, pawn->height, pawn->width);
 
-    glBegin(GL_TRIANGLES);
-		glVertex3dv(pawn->va); glVertex3dv(pawn->vd); glVertex3dv(pawn->ve);
-		glVertex3dv(pawn->vb); glVertex3dv(pawn->va); glVertex3dv(pawn->ve);
-		glVertex3dv(pawn->vc); glVertex3dv(pawn->vb); glVertex3dv(pawn->ve);
-		glVertex3dv(pawn->vd); glVertex3dv(pawn->vc); glVertex3dv(pawn->ve);
-    glEnd();
+    if (pawn->model) {
+		/* material colour */
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pawn->color);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pawn->color);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pawn->color);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
 
+        glmDraw(pawn->model, GLM_SMOOTH );
+    }
     glPopMatrix();
 }
 
-void destroy_pawn(Pawn *cboard)
+void destroy_pawn(Pawn *pawn)
 {
-	free(cboard);
-	cboard = NULL;
+    free(pawn->model);
+	free(pawn);
+	pawn = NULL;
 }
