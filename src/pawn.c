@@ -38,9 +38,9 @@ char* _get_model_name(Pawn *pawn, PlayerType player)
 Pawn* create_pawn(PawnType type, PlayerType player)
 {
     Pawn *pawn = malloc(sizeof(Pawn));
-	pawn->x = 0.0f;
-	pawn->y = 0.0f;
-	pawn->z = 0.0f;
+	pawn->pos[0] = 0;
+	pawn->pos[1] = 0;
+	pawn->pos[2] = 0;
 	pawn->width = 0.05f;
 
 	/* pawn colors */
@@ -67,7 +67,6 @@ Pawn* create_pawn(PawnType type, PlayerType player)
     if (model_name) {
         pawn->model = (GLMmodel*) malloc(sizeof(GLMmodel));
 		pawn->model = glmReadOBJ(model_name);
-		glmLinearTexture(pawn->model);
     }
 	return pawn;
 }
@@ -77,7 +76,7 @@ void display_pawn(Pawn *pawn) {
     glPushMatrix();
 
     /* draw pawn*/
-    glTranslated(pawn->x, pawn->y, pawn->z);
+    glTranslated(pawn->pos[0], pawn->pos[1], pawn->pos[2]);
 	glScalef(pawn->width, pawn->height, pawn->width);
 
     if (pawn->model) {

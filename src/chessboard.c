@@ -7,9 +7,9 @@
 Chessboard * create_chessboard()
 {
     Chessboard *cboard = malloc(sizeof(Chessboard));
-	cboard->x = 0;
-	cboard->y = 0;
-	cboard->z = 0;
+	cboard->pos[0] = 0;
+	cboard->pos[1] = 0;
+	cboard->pos[2] = 0;
 
 	cboard->cell_height = 1.0f / NUM_CELLS;
 	cboard->cell_width  = 1.0f / NUM_CELLS;
@@ -35,9 +35,9 @@ void chessboard_place_pawn(Chessboard *cboard, Pawn *p, int x, int y) {
 	/* invert the position of the pieces along the y-axis */
 	y = NUM_CELLS - y - 1;
 
-	p->x = ((GLdouble)x/NUM_CELLS) - 0.5f + cboard->cell_width/2;
-	p->y = 0;
-	p->z = ((GLdouble)y/NUM_CELLS) - 0.5f + cboard->cell_height/2;
+	p->pos[0] = ((GLdouble)x/NUM_CELLS) - 0.5f + cboard->cell_width/2;
+	p->pos[1] = 0;
+	p->pos[2] = ((GLdouble)y/NUM_CELLS) - 0.5f + cboard->cell_height/2;
 	cboard->board[x + (NUM_CELLS * y)] = p;
 }
 
@@ -50,6 +50,7 @@ Pawn *get_pawn(Chessboard* c, int x, int y) {
 
 void display_chessboard(Chessboard *cboard) {
     glPushMatrix();
+    glTranslatef(cboard->pos[0], cboard->pos[1], cboard->pos[2]);
     GLdouble x, y;
     int color = 0;
     
@@ -95,7 +96,6 @@ void display_chessboard(Chessboard *cboard) {
 			if (pawn) display_pawn(pawn);
     	}
    }
-   glTranslatef(cboard->x, cboard->y, cboard->z);
    glPopMatrix();
 }
 

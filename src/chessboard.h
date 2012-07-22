@@ -17,9 +17,7 @@
 #define A 3
 
 typedef struct {
-	GLdouble x; /* placeable */
-	GLdouble y;
-    GLdouble z;
+	GLdouble pos[3]; /* placeable, x, y, z */
 
 	GLdouble cell_width;
 	GLdouble cell_height;

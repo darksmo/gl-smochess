@@ -31,9 +31,9 @@ typedef enum pawn_type_t {
 } PawnType;
 
 typedef struct {
-	GLdouble x; /* placeable */
-	GLdouble y;
-    GLdouble z;
+	/* An object always starts with these fields */
+	GLdouble pos[3];
+    GLMmodel *model;
 
 	PawnType type;
 	GLdouble width;
@@ -42,9 +42,6 @@ typedef struct {
 	GLfloat color[4];
 	GLfloat color_specular[4];
 	GLfloat shininess;
-
-    /* GLMmodel */
-    GLMmodel *model;
 } Pawn;
 
 Pawn * create_pawn(PawnType type, PlayerType player);

@@ -3,22 +3,32 @@
 
 #include "viewer.h"
 
-Viewer* create_viewer()
+Viewer* create_viewer(Placeable *object)
 {
     Viewer *v = malloc(sizeof(Viewer));
-	v->x=0;
-	v->y=0.1;
-	v->z=1;
-	v->lookat_x = 0;
-	v->lookat_y = 0;
-	v->lookat_z = -0.5;
+	if (object) {
+		v->pos[0] = object->pos[0];
+		v->pos[1] = object->pos[1] + 0.1f;
+		v->pos[2] = object->pos[2] + 0.5f;
+		v->lookat[0] = object->pos[0];
+		v->lookat[1] = object->pos[1];
+		v->lookat[2] = object->pos[2];
+	}
+	else {
+		v->pos[0] = 0;
+		v->pos[1] = 0.1;
+		v->pos[2] = 1;
+		v->lookat[0] = 0;
+		v->lookat[1] = 0;
+		v->lookat[2] = 0;
+	}
 
 	return v;
 }
 
 void observe_from_viewer(Viewer *v) {
-   gluLookAt( v->x,        v->y,        v->z,
-              v->lookat_x, v->lookat_y, v->lookat_z,
+   gluLookAt( v->pos[0]  , v->pos[1]  , v->pos[2],
+              v->lookat[0], v->lookat[1], v->lookat[2],
               0.0f, 1.0f, 0.0f );
 }
 

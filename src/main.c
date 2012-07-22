@@ -9,6 +9,8 @@
 
 #include "chessboard.h"
 #include "pawn.h"
+#include "placer.h"
+#include "table.h"
 #include "viewer.h"
 #include "glm.h"
 
@@ -17,6 +19,7 @@
 
 Chessboard *chessboard;
 Pawn *pawn[2][16];
+Table *table;
 
 /* some lighting */
 GLfloat ambientLight[4] = { 0.4f, 0.4f, 0.5f, 1.0f };
@@ -28,12 +31,16 @@ GLfloat position[4] = { 1.0f, 1.0f, 1.0f, 0.3f };
 Viewer *viewer;
 
 void init() {
-	viewer = create_viewer();
-
-    /* the chessboard */
+    /* the chessboard and the table and the player (viewer)*/
 	chessboard = create_chessboard();
+	table      = create_table();
 
-	/* create chess set */
+	/* place the chessboard on the table */
+	place_on_model(chessboard->pos, table);
+
+	viewer = create_viewer(chessboard);
+
+	/* the chess set */
 	int player, i;
 	for (player = 0; player < PLAYER_TYPE_COUNT; player++) {
 		for (i=0;  i<8;  i++) pawn[player][i] = create_pawn(PAWN_TYPE_PAWN, player);
@@ -76,6 +83,11 @@ void init() {
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glEnable(GL_POLYGON_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
+	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
 	/* lighting */
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
@@ -97,9 +109,10 @@ void display() {
    
    observe_from_viewer(viewer);
 
+   display_table(table);
    display_chessboard(chessboard);
 
-   // glFlush();
+   glFlush();
    glutSwapBuffers();
 }
 
@@ -118,10 +131,10 @@ void timer(int extra) {
 }
 
 void keypressed(unsigned char key, int x, int y) {
-	if (key == 's') { viewer->z+=0.05; }
-	if (key == 'w') { viewer->z-=0.05; }
-	if (key == 'a') { viewer->x-=0.05; }
-	if (key == 'd') { viewer->x+=0.05; }
+	if (key == 's') { viewer->pos[2]+=0.05; }
+	if (key == 'w') { viewer->pos[2]-=0.05; }
+	if (key == 'a') { viewer->pos[0]-=0.05; }
+	if (key == 'd') { viewer->pos[0]+=0.05; }
     if (key == 'x') { exit(0); }
 }
 
