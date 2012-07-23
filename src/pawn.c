@@ -45,18 +45,18 @@ Pawn* create_pawn(PawnType type, PlayerType player)
 
 	/* pawn colors */
 	if (player == PLAYER_TYPE_BLACK) {
-		pawn->color[R] = 0.0;
-		pawn->color[G] = 0.0;
-		pawn->color[B] = 0.0;
-		pawn->color[A] = 1.0;
+		pawn->color[R] = 0.01f;
+		pawn->color[G] = 0.01f;
+		pawn->color[B] = 0.01f;
+		pawn->color[A] = 1.0f;
 	}
 	else {
-		pawn->color[R] = 1.0;
-		pawn->color[G] = 1.0;
-		pawn->color[B] = 1.0;
-		pawn->color[A] = 1.0;
+		pawn->color[R] = 0.09f;
+		pawn->color[G] = 0.09f;
+		pawn->color[B] = 0.09f;
+		pawn->color[A] = 1.0f;
 	}
-	pawn->shininess = 30.0;
+	pawn->shininess = 30.0f;
 
 	pawn->type = type;
 	pawn->height = 0.1f + ((GLdouble)type/(GLdouble)PAWN_TYPE_COUNT);
@@ -84,7 +84,7 @@ void display_pawn(Pawn *pawn) {
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pawn->color);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pawn->color);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pawn->color);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 1.5f);
 
         glmDraw(pawn->model, GLM_SMOOTH );
     }

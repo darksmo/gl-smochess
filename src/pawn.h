@@ -15,8 +15,8 @@
 #define A 3
 
 typedef enum player_type_t {
-	PLAYER_TYPE_BLACK,
 	PLAYER_TYPE_WHITE,
+	PLAYER_TYPE_BLACK,
 	PLAYER_TYPE_COUNT,
 } PlayerType;
 

@@ -9,7 +9,9 @@
 #ifndef CHESSBOARD_h
 #define CHESSBOARD_h
 
+
 #define NUM_CELLS 8
+#define CELL(x,y) (x+(NUM_CELLS*(y)))
 
 #define R 0
 #define G 1
@@ -25,6 +27,9 @@ typedef struct {
 	GLfloat color_dark[4];
 	GLfloat color_clear[4];
 	GLfloat color_specular[4];
+
+    int cell_selected;
+    GLfloat color_selected[4];
 
 	Pawn **board;
 } Chessboard;
