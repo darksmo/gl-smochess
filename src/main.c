@@ -36,9 +36,9 @@ void init() {
 	table      = create_table();
 
 	/* place the chessboard on the table */
-	place_on_model(chessboard->pos, table);
+	place_on_model(chessboard->pos, (Placeable *) table);
 
-	viewer = create_viewer(chessboard);
+	viewer = create_viewer((Placeable *)chessboard);
 
 	/* the chess set */
 	int player, i;

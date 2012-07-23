@@ -18,5 +18,6 @@ Viewer* create_viewer(Placeable *object);
 void observe_from_viewer(Viewer *v);
 void display_viewer(Viewer *v);
 void destroy_viewer(Viewer *v);
+void observe_object(Viewer *v, Placeable *object);
 
 #endif
