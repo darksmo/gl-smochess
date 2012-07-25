@@ -154,7 +154,7 @@ void select_cell(Chessboard *cboard, int cell)
 {
 	int cell_wish = cell == CELL_CURRENT ? cboard->cell_highlighted : cell;
 	if (get_pawn(cboard, cell_wish)) {
-		cboard->cell_selected = cell_wish;
+		cboard->cell_selected = cell_wish == cboard->cell_selected ? CELL_NONE : cell_wish;
 	}
 }
 
