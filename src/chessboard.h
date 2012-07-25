@@ -15,6 +15,8 @@
 #define CELL(x,y) (x+(NUM_CELLS*(y)))
 #define CELLY(cell) ((int)((float)cell/(float)NUM_CELLS))
 #define CELLX(cell) (cell - (NUM_CELLS * CELLY(cell)))
+#define CELL_CURRENT -2
+#define CELL_NONE -1
 #define R 0
 #define G 1
 #define B 2
@@ -30,6 +32,7 @@ typedef struct {
 	GLfloat color_clear[4];
 	GLfloat color_specular[4];
 
+    int cell_highlighted;
     int cell_selected;
     GLfloat color_selected[4];
 
@@ -40,12 +43,13 @@ Chessboard *create_chessboard();
 void destroy_chessboard(Chessboard *cboard);
 void display_chessboard(Chessboard *cboard);
 
-void select_cell(Chessboard *cboard, int x, int y);
-void select_cell_up(Chessboard *cboard);
-void select_cell_down(Chessboard *cboard);
-void select_cell_left(Chessboard *cboard);
-void select_cell_right(Chessboard *cboard);
+void highlight_cell(Chessboard *cboard, int x, int y);
+void highlight_cell_up(Chessboard *cboard);
+void highlight_cell_down(Chessboard *cboard);
+void highlight_cell_left(Chessboard *cboard);
+void highlight_cell_right(Chessboard *cboard);
+void select_cell(Chessboard *cboard, int cell);
 
-void chessboard_place_pawn(Chessboard *cboard, Pawn *pawn, int x, int y);
+void chessboard_place_pawn(Chessboard *cboard, Pawn *pawn, int cell);
 
 #endif

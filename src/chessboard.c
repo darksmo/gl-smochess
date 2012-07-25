@@ -34,7 +34,8 @@ Chessboard * create_chessboard()
 	cboard->color_specular[B] = 1.0f; cboard->color_specular[A] = 1.0f;
 
     /* select no cell */
-    cboard->cell_selected = CELL(0,1);
+    cboard->cell_highlighted = CELL_NONE;
+    cboard->cell_selected =  CELL_NONE;
 
 	/* logical cells for the pawn */
 	cboard->board = malloc(sizeof(Pawn*) * NUM_CELLS * NUM_CELLS);
@@ -43,23 +44,22 @@ Chessboard * create_chessboard()
 	return cboard;
 }
 
-void chessboard_place_pawn(Chessboard *cboard, Pawn *p, int x, int y) {
+void chessboard_place_pawn(Chessboard *cboard, Pawn *p, int cell) {
 	/* invert the position of the pieces along the y-axis */
 
-	p->pos[0] = ((GLdouble)x/NUM_CELLS) - 0.5f + cboard->cell_width/2;
+	p->pos[0] = ((GLdouble)CELLX(cell)/NUM_CELLS) - 0.5f + cboard->cell_width/2;
 	p->pos[1] = 0;
-	p->pos[2] = ((GLdouble)y/NUM_CELLS) - 0.5f + cboard->cell_height/2;
+	p->pos[2] = ((GLdouble)CELLY(cell)/NUM_CELLS) - 0.5f + cboard->cell_height/2;
 
-	cboard->board[CELL(x, y)] = p;
+	cboard->board[CELL(CELLX(cell),NUM_CELLS - CELLY(cell) - 1)] = p;
 }
 
-void select_cell(Chessboard* c, int x, int y) {
-    c->cell_selected = CELL(x,y);
+void highlight_cell(Chessboard* c, int x, int y) {
+    c->cell_highlighted = CELL(x,y);
 }
 
-Pawn *get_pawn(Chessboard* c, int x, int y) {
-	/* invert the position of the pieces along the y-axis */
-	return NULL;
+Pawn *get_pawn(Chessboard* c, int cell) {
+	return c->board[cell];
 }
 
 void display_chessboard(Chessboard *cboard) {
@@ -83,7 +83,7 @@ void display_chessboard(Chessboard *cboard) {
     		color = 1 - color;
     
     		/* choose material color */
-            if (cboard->cell_selected == CELL(xcell, ycell)) {
+            if (cboard->cell_highlighted == CELL(xcell, ycell)) {
                 glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_selected);
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_selected);
                 glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
@@ -114,35 +114,47 @@ void display_chessboard(Chessboard *cboard) {
     		glEnd();
 
 			/* draw pawn at cell */
-			Pawn *pawn = cboard->board[CELL(xcell, ycell)];
-			if (pawn) display_pawn(pawn);
+			Pawn *pawn = get_pawn(cboard, CELL(xcell, ycell));
+			if (pawn) {
+				display_pawn(pawn, 
+					CELL(xcell, ycell) == cboard->cell_selected ? PAWN_SELECTED 
+																: PAWN_NORMAL
+				);
+			}
     	}
    }
    glPopMatrix();
 }
 
-void select_cell_up(Chessboard *cboard)
+void highlight_cell_up(Chessboard *cboard)
 {
-	int celly = CELLY(cboard->cell_selected);
+	int celly = CELLY(cboard->cell_highlighted);
 	celly += celly == NUM_CELLS-1 ? -NUM_CELLS+1 : 1; 
-    cboard->cell_selected = CELL(CELLX(cboard->cell_selected), celly);
+    cboard->cell_highlighted = CELL(CELLX(cboard->cell_highlighted), celly);
 }
-void select_cell_down(Chessboard *cboard)
+void highlight_cell_down(Chessboard *cboard)
 {
-	int celly = CELLY(cboard->cell_selected);
+	int celly = CELLY(cboard->cell_highlighted);
 	celly -= celly == 0 ? -NUM_CELLS + 1 : 1; 
-    cboard->cell_selected = CELL(CELLX(cboard->cell_selected), celly);
+    cboard->cell_highlighted = CELL(CELLX(cboard->cell_highlighted), celly);
 }
-void select_cell_left(Chessboard *cboard)
+void highlight_cell_left(Chessboard *cboard)
 {
-	int cellx = CELLX(cboard->cell_selected);
+	int cellx = CELLX(cboard->cell_highlighted);
 	cellx += cellx == 0 ? NUM_CELLS-1 : -1; 
-    cboard->cell_selected = CELL(cellx, CELLY(cboard->cell_selected));
+    cboard->cell_highlighted = CELL(cellx, CELLY(cboard->cell_highlighted));
 }
-void select_cell_right(Chessboard *cboard)
+void highlight_cell_right(Chessboard *cboard)
 {
-	int cellx = CELLX(cboard->cell_selected);
+	int cellx = CELLX(cboard->cell_highlighted);
 	cellx += cellx == NUM_CELLS-1 ? -NUM_CELLS+1 : 1; 
-    cboard->cell_selected = CELL(cellx, CELLY(cboard->cell_selected));
+    cboard->cell_highlighted = CELL(cellx, CELLY(cboard->cell_highlighted));
+}
+void select_cell(Chessboard *cboard, int cell)
+{
+	int cell_wish = cell == CELL_CURRENT ? cboard->cell_highlighted : cell;
+	if (get_pawn(cboard, cell_wish)) {
+		cboard->cell_selected = cell_wish;
+	}
 }
 

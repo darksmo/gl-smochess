@@ -18,4 +18,6 @@ Highlight cells:
             '
              `---- backward
 
+Select pawn: p
+
 Tested on MacOSX 10.6.8

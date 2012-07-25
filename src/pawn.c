@@ -56,7 +56,9 @@ Pawn* create_pawn(PawnType type, PlayerType player)
 		pawn->color[B] = 0.09f;
 		pawn->color[A] = 1.0f;
 	}
-	pawn->shininess = 30.0f;
+	pawn->color_selected[R] = 0.05f;
+	pawn->color_selected[G] = 0.05f;
+	pawn->color_selected[B] = 0.08f;
 
 	pawn->type = type;
 	pawn->height = 0.1f + ((GLdouble)type/(GLdouble)PAWN_TYPE_COUNT);
@@ -72,7 +74,7 @@ Pawn* create_pawn(PawnType type, PlayerType player)
 }
 
 
-void display_pawn(Pawn *pawn) {
+void display_pawn(Pawn *pawn, PawnState state) {
     glPushMatrix();
 
     /* draw pawn*/
@@ -81,12 +83,19 @@ void display_pawn(Pawn *pawn) {
 
     if (pawn->model) {
 		/* material colour */
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pawn->color);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pawn->color);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pawn->color);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 1.5f);
-
-        glmDraw(pawn->model, GLM_SMOOTH );
+		if (state == PAWN_SELECTED) {
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pawn->color_selected);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pawn->color_selected);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pawn->color_selected);
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 2.5f);
+		}
+		else {
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pawn->color);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pawn->color);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pawn->color);
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 1.5f);
+		}
+        glmDraw(pawn->model, GLM_SMOOTH);
     }
     glPopMatrix();
 }

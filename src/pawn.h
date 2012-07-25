@@ -14,6 +14,11 @@
 #define B 2
 #define A 3
 
+typedef enum pawn_state_t {
+	PAWN_NORMAL,
+	PAWN_SELECTED,
+} PawnState;
+
 typedef enum player_type_t {
 	PLAYER_TYPE_WHITE,
 	PLAYER_TYPE_BLACK,
@@ -41,11 +46,11 @@ typedef struct {
 
 	GLfloat color[4];
 	GLfloat color_specular[4];
-	GLfloat shininess;
+	GLfloat color_selected[4];
 } Pawn;
 
 Pawn * create_pawn(PawnType type, PlayerType player);
 void destroy_pawn(Pawn *pawn);
-void display_pawn(Pawn *pawn);
+void display_pawn(Pawn *pawn, PawnState state);
 
 #endif
