@@ -13,6 +13,8 @@
 #define NUM_CELLS 8
 #define TOTAL_CELLS (NUM_CELLS*NUM_CELLS)
 #define CELL(x,y) (x+(NUM_CELLS*(y)))
+#define CELLY(cell) ((int)((float)cell/(float)NUM_CELLS))
+#define CELLX(cell) (cell - (NUM_CELLS * CELLY(cell)))
 #define R 0
 #define G 1
 #define B 2

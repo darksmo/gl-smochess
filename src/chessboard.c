@@ -123,20 +123,26 @@ void display_chessboard(Chessboard *cboard) {
 
 void select_cell_up(Chessboard *cboard)
 {
-    if (cboard->cell_selected <= TOTAL_CELLS - NUM_CELLS)
-        cboard->cell_selected+=NUM_CELLS;
+	int celly = CELLY(cboard->cell_selected);
+	celly += celly == NUM_CELLS-1 ? -NUM_CELLS+1 : 1; 
+    cboard->cell_selected = CELL(CELLX(cboard->cell_selected), celly);
 }
 void select_cell_down(Chessboard *cboard)
 {
-    if (cboard->cell_selected >= NUM_CELLS)
-        cboard->cell_selected-=NUM_CELLS;
+	int celly = CELLY(cboard->cell_selected);
+	celly -= celly == 0 ? -NUM_CELLS + 1 : 1; 
+    cboard->cell_selected = CELL(CELLX(cboard->cell_selected), celly);
 }
 void select_cell_left(Chessboard *cboard)
 {
-    cboard->cell_selected--;
+	int cellx = CELLX(cboard->cell_selected);
+	cellx += cellx == 0 ? NUM_CELLS-1 : -1; 
+    cboard->cell_selected = CELL(cellx, CELLY(cboard->cell_selected));
 }
 void select_cell_right(Chessboard *cboard)
 {
-    cboard->cell_selected++;
+	int cellx = CELLX(cboard->cell_selected);
+	cellx += cellx == NUM_CELLS-1 ? -NUM_CELLS+1 : 1; 
+    cboard->cell_selected = CELL(cellx, CELLY(cboard->cell_selected));
 }
 

@@ -11,4 +11,11 @@ Move around the chessboard using the keys:
             '
              `---- backward
 
+Highlight cells:
+             .---- forward
+            t 
+ left --- f g h --- right
+            '
+             `---- backward
+
 Tested on MacOSX 10.6.8
