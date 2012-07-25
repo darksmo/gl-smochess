@@ -33,6 +33,8 @@ Chessboard * create_chessboard()
 	cboard->color_specular[R] = 1.0f; cboard->color_specular[G] = 1.0f;
 	cboard->color_specular[B] = 1.0f; cboard->color_specular[A] = 1.0f;
 
+	cboard->player_turn = PLAYER_TYPE_WHITE;
+
     /* select no cell */
     cboard->cell_highlighted = CELL_NONE;
     cboard->cell_selected =  CELL_NONE;
@@ -49,9 +51,9 @@ void chessboard_place_pawn(Chessboard *cboard, Pawn *p, int cell) {
 
 	p->pos[0] = ((GLdouble)CELLX(cell)/NUM_CELLS) - 0.5f + cboard->cell_width/2;
 	p->pos[1] = 0;
-	p->pos[2] = ((GLdouble)CELLY(cell)/NUM_CELLS) - 0.5f + cboard->cell_height/2;
+	p->pos[2] = ((GLdouble)(NUM_CELLS-CELLY(cell)-1)/NUM_CELLS) - 0.5f + cboard->cell_height/2;
 
-	cboard->board[CELL(CELLX(cell),NUM_CELLS - CELLY(cell) - 1)] = p;
+	cboard->board[cell] = p;
 }
 
 void highlight_cell(Chessboard* c, int x, int y) {
@@ -150,11 +152,51 @@ void highlight_cell_right(Chessboard *cboard)
 	cellx += cellx == NUM_CELLS-1 ? -NUM_CELLS+1 : 1; 
     cboard->cell_highlighted = CELL(cellx, CELLY(cboard->cell_highlighted));
 }
+
+void set_turn(Chessboard *cboard, PlayerType player) {
+	cboard->player_turn = player;
+}
+void flip_turn(Chessboard *cboard) {
+	cboard->player_turn = 
+		cboard->player_turn == PLAYER_TYPE_WHITE ? PLAYER_TYPE_BLACK
+												 : PLAYER_TYPE_WHITE;
+}
+
 void select_cell(Chessboard *cboard, int cell)
 {
 	int cell_wish = cell == CELL_CURRENT ? cboard->cell_highlighted : cell;
-	if (get_pawn(cboard, cell_wish)) {
-		cboard->cell_selected = cell_wish == cboard->cell_selected ? CELL_NONE : cell_wish;
+	Pawn *p = get_pawn(cboard, cell_wish);
+	if (p) {
+		if (p->player == cboard->player_turn) {
+			/* own pawn selected -- clear selection / select pawn */
+			cboard->cell_selected = cell_wish == cboard->cell_selected ? CELL_NONE : cell_wish;
+		}
+		else {
+			if(CELL_NONE != cboard->cell_selected) {
+				/* opponent pawn selected -- take */
+				chessboard_clear_cell(cboard, cell_wish);
+				Pawn *taker = get_pawn(cboard, cboard->cell_selected);
+				chessboard_clear_cell(cboard, cboard->cell_selected);
+				chessboard_place_pawn(cboard, taker, cell_wish);;
+				cboard->cell_selected = CELL_NONE;
+				flip_turn(cboard);
+			}
+		}
+	}
+	else {
+		/* empty cell selected */
+		if(CELL_NONE != cboard->cell_selected) {
+			/* move */
+			Pawn *mover = get_pawn(cboard, cboard->cell_selected);
+		    chessboard_clear_cell(cboard, cboard->cell_selected);
+			chessboard_place_pawn(cboard, mover, cell_wish);;
+		    flip_turn(cboard);
+		}
+		cboard->cell_selected = CELL_NONE;
 	}
 }
 
+void chessboard_clear_cell(Chessboard *cboard, int cell)
+{
+	cboard->board[cell] = NULL;
+}

@@ -41,6 +41,7 @@ typedef struct {
     GLMmodel *model;
 
 	PawnType type;
+	PlayerType player;
 	GLdouble width;
 	GLdouble height;
 

@@ -61,7 +61,7 @@ void init() {
 	/* place all the pieces */
 	int x, y;
 	/* -- white -- */
-	y=7; chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][8],  CELL(0, y)); /* rooks */
+	y=0; chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][8],  CELL(0, y)); /* rooks */
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][9],  CELL(7, y));
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][10], CELL(1, y)); /* knight */
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][11], CELL(6, y));
@@ -69,10 +69,10 @@ void init() {
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][13], CELL(5, y));
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][14], CELL(3, y)); /* queen */
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][15], CELL(4, y)); /* king */
-	y=6; for (x=0; x<8; x++) chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][x], CELL(x, y));
+	y=1; for (x=0; x<8; x++) chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_WHITE][x], CELL(x, y));
 	
 	/* -- black -- */
-	y=0; chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][8],  CELL(0, y)); /* rooks */
+	y=7; chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][8],  CELL(0, y)); /* rooks */
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][9],  CELL(7, y));
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][10], CELL(1, y)); /* knight */
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][11], CELL(6, y));
@@ -80,7 +80,7 @@ void init() {
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][13], CELL(5, y));
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][14], CELL(3, y)); /* queen */
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][15], CELL(4, y)); /* king */
-	y=1; for (x=0; x<8; x++) chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][x], CELL(x, y));
+	y=6; for (x=0; x<8; x++) chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][x], CELL(x, y));
 	
     /* opengl initialisations */
 	glClearColor (0.8, 0.8, 1.0, 1.0);

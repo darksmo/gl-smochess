@@ -61,6 +61,7 @@ Pawn* create_pawn(PawnType type, PlayerType player)
 	pawn->color_selected[B] = 0.08f;
 
 	pawn->type = type;
+	pawn->player = player;
 	pawn->height = 0.1f + ((GLdouble)type/(GLdouble)PAWN_TYPE_COUNT);
 
     char *model_name = _get_model_name(pawn, player);

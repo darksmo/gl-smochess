@@ -36,6 +36,8 @@ typedef struct {
     int cell_selected;
     GLfloat color_selected[4];
 
+	PlayerType player_turn;
+
 	Pawn **board;
 } Chessboard;
 
@@ -51,5 +53,6 @@ void highlight_cell_right(Chessboard *cboard);
 void select_cell(Chessboard *cboard, int cell);
 
 void chessboard_place_pawn(Chessboard *cboard, Pawn *pawn, int cell);
+void chessboard_clear_cell(Chessboard *cboard, int cell);
 
 #endif
