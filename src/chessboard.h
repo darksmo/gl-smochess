@@ -11,8 +11,8 @@
 
 
 #define NUM_CELLS 8
+#define TOTAL_CELLS (NUM_CELLS*NUM_CELLS)
 #define CELL(x,y) (x+(NUM_CELLS*(y)))
-
 #define R 0
 #define G 1
 #define B 2
@@ -37,6 +37,12 @@ typedef struct {
 Chessboard *create_chessboard();
 void destroy_chessboard(Chessboard *cboard);
 void display_chessboard(Chessboard *cboard);
+
+void select_cell(Chessboard *cboard, int x, int y);
+void select_cell_up(Chessboard *cboard);
+void select_cell_down(Chessboard *cboard);
+void select_cell_left(Chessboard *cboard);
+void select_cell_right(Chessboard *cboard);
 
 void chessboard_place_pawn(Chessboard *cboard, Pawn *pawn, int x, int y);
 

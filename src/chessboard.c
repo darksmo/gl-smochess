@@ -121,3 +121,22 @@ void display_chessboard(Chessboard *cboard) {
    glPopMatrix();
 }
 
+void select_cell_up(Chessboard *cboard)
+{
+    if (cboard->cell_selected <= TOTAL_CELLS - NUM_CELLS)
+        cboard->cell_selected+=NUM_CELLS;
+}
+void select_cell_down(Chessboard *cboard)
+{
+    if (cboard->cell_selected >= NUM_CELLS)
+        cboard->cell_selected-=NUM_CELLS;
+}
+void select_cell_left(Chessboard *cboard)
+{
+    cboard->cell_selected--;
+}
+void select_cell_right(Chessboard *cboard)
+{
+    cboard->cell_selected++;
+}
+

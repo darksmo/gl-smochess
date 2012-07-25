@@ -149,6 +149,10 @@ void keypressed(unsigned char key, int x, int y) {
 	if (key == 'w') { viewer->pos[2]-=0.05; }
 	if (key == 'a') { viewer->pos[0]-=0.05; }
 	if (key == 'd') { viewer->pos[0]+=0.05; }
+	if (key == 'f') { select_cell_left(chessboard); }
+	if (key == 'g') { select_cell_down(chessboard); }
+	if (key == 'h') { select_cell_right(chessboard); }
+	if (key == 't') { select_cell_up(chessboard); }
     if (key == 'x') { exit(0); }
 }
 
