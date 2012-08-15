@@ -5,6 +5,7 @@
 #endif
 
 #include "pawn.h"
+#include "bitboard.h"
 
 #ifndef CHESSBOARD_h
 #define CHESSBOARD_h
@@ -12,11 +13,11 @@
 
 #define NUM_CELLS 8
 #define TOTAL_CELLS (NUM_CELLS*NUM_CELLS)
-#define CELL(x,y) (x+(NUM_CELLS*(y)))
 #define CELLY(cell) ((int)((float)cell/(float)NUM_CELLS))
 #define CELLX(cell) (cell - (NUM_CELLS * CELLY(cell)))
 #define CELL_CURRENT -2
 #define CELL_NONE -1
+#define CELL(x,y) (x+(NUM_CELLS*(y)))
 #define R 0
 #define G 1
 #define B 2
@@ -31,12 +32,18 @@ typedef struct {
 	GLfloat color_dark[4];
 	GLfloat color_clear[4];
 	GLfloat color_specular[4];
+    GLfloat color_highlighted[4];
 
     int cell_highlighted;
     int cell_selected;
     GLfloat color_selected[4];
+    int cells_highlighted[64];
 
 	PlayerType player_turn;
+
+    /* the bitboard representation of the chessboard */
+    Bitboard *bitboard;
+
 
 	Pawn **board;
 } Chessboard;
@@ -54,5 +61,6 @@ void select_cell(Chessboard *cboard, int cell);
 
 void chessboard_place_pawn(Chessboard *cboard, Pawn *pawn, int cell);
 void chessboard_clear_cell(Chessboard *cboard, int cell);
+void chessboard_ready(Chessboard *cboard);
 
 #endif

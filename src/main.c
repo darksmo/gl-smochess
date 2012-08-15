@@ -81,6 +81,7 @@ void init() {
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][14], CELL(3, y)); /* queen */
 	     chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][15], CELL(4, y)); /* king */
 	y=6; for (x=0; x<8; x++) chessboard_place_pawn(chessboard, pawn[PLAYER_TYPE_BLACK][x], CELL(x, y));
+    chessboard_ready(chessboard);
 	
     /* opengl initialisations */
 	glClearColor (0.8, 0.8, 1.0, 1.0);

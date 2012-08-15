@@ -4,6 +4,43 @@
 
 #include "chessboard.h"
 
+
+/* - - - - - - - engine related - - - - - - - */
+
+PieceType bitboard_type_mapper(void *el)
+{   
+    Pawn **x = (Pawn**) el;
+    if (*x) {
+        if ((*x)->player == PLAYER_TYPE_BLACK) {
+            switch ((*x)->type) { 
+                case PAWN_TYPE_KNIGHT: return BLACK_KNIGHT;
+                case PAWN_TYPE_BISHOP: return BLACK_BISHOP;
+                case PAWN_TYPE_QUEEN:  return BLACK_QUEEN;
+                case PAWN_TYPE_PAWN:   return BLACK_PAWN;
+                case PAWN_TYPE_ROOK:   return BLACK_ROOK;
+                case PAWN_TYPE_KING:   return BLACK_KING;
+            }
+        }
+        else {
+            switch ((*x)->type) { 
+                case PAWN_TYPE_KNIGHT: return WHITE_KNIGHT;
+                case PAWN_TYPE_BISHOP: return WHITE_BISHOP;
+                case PAWN_TYPE_QUEEN:  return WHITE_QUEEN;
+                case PAWN_TYPE_PAWN:   return WHITE_PAWN;
+                case PAWN_TYPE_ROOK:   return WHITE_ROOK;
+                case PAWN_TYPE_KING:   return WHITE_KING;
+            }
+        }
+    }
+    return PIECE_NONE;
+}
+void chessboard_ready(Chessboard *cboard) {
+    cboard->bitboard = create_bitboard((void *)cboard->board, sizeof(Pawn*), &bitboard_type_mapper, 1);
+    print_chessboard(cboard->bitboard);
+}
+
+/* - - - - -  chessboard view related - - - - - - */
+
 void destroy_chessboard(Chessboard *cboard)
 {
     free(cboard->board); cboard->board = NULL;
@@ -30,6 +67,9 @@ Chessboard * create_chessboard()
 	cboard->color_selected[R] = 0.0f; cboard->color_selected[G] = 0.0f;
 	cboard->color_selected[B] = 1.0f; cboard->color_selected[A] = 0.2f;
 	
+    cboard->color_highlighted[R] = 1.0f; cboard->color_highlighted[G] = 0.0f;
+	cboard->color_highlighted[B] = 0.0f; cboard->color_highlighted[A] = 0.5f;
+	
 	cboard->color_specular[R] = 1.0f; cboard->color_specular[G] = 1.0f;
 	cboard->color_specular[B] = 1.0f; cboard->color_specular[A] = 1.0f;
 
@@ -38,10 +78,14 @@ Chessboard * create_chessboard()
     /* select no cell */
     cboard->cell_highlighted = CELL_NONE;
     cboard->cell_selected =  CELL_NONE;
+    memset(cboard->cells_highlighted, CELL_NONE, sizeof(int)*64);
 
 	/* logical cells for the pawn */
 	cboard->board = malloc(sizeof(Pawn*) * NUM_CELLS * NUM_CELLS);
 	memset(cboard->board, 0, sizeof(Pawn*) * NUM_CELLS * NUM_CELLS);
+
+    /* the bitboard */
+    cboard->bitboard = NULL;
 
 	return cboard;
 }
@@ -85,24 +129,32 @@ void display_chessboard(Chessboard *cboard) {
     		color = 1 - color;
     
     		/* choose material color */
-            if (cboard->cell_highlighted == CELL(xcell, ycell)) {
-                glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_selected);
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_selected);
+            if (CELL_NONE != cboard->cells_highlighted[CELL(xcell, ycell)]) {
+                glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_highlighted);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_highlighted);
                 glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
                 glMaterialf(GL_FRONT, GL_SHININESS, 10.0f);
             }
             else {
-                if (color) { 
-                    glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_dark);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_dark);
+                if (cboard->cell_highlighted == CELL(xcell, ycell)) {
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_selected);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_selected);
                     glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
-                    glMaterialf(GL_FRONT, GL_SHININESS, 60.0f);
+                    glMaterialf(GL_FRONT, GL_SHININESS, 10.0f);
                 }
                 else {
-                    glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_clear);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_clear);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
-                    glMaterialf(GL_FRONT, GL_SHININESS, 40.0f);
+                    if (color) { 
+                        glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_dark);
+                        glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_dark);
+                        glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
+                        glMaterialf(GL_FRONT, GL_SHININESS, 60.0f);
+                    }
+                    else {
+                        glMaterialfv(GL_FRONT, GL_AMBIENT, cboard->color_clear);
+                        glMaterialfv(GL_FRONT, GL_DIFFUSE, cboard->color_clear);
+                        glMaterialfv(GL_FRONT, GL_SPECULAR, cboard->color_specular);
+                        glMaterialf(GL_FRONT, GL_SHININESS, 40.0f);
+                    }
                 }
             }
 
@@ -164,36 +216,73 @@ void flip_turn(Chessboard *cboard) {
 
 void select_cell(Chessboard *cboard, int cell)
 {
+    int i;
 	int cell_wish = cell == CELL_CURRENT ? cboard->cell_highlighted : cell;
 	Pawn *p = get_pawn(cboard, cell_wish);
 	if (p) {
 		if (p->player == cboard->player_turn) {
 			/* own pawn selected -- clear selection / select pawn */
 			cboard->cell_selected = cell_wish == cboard->cell_selected ? CELL_NONE : cell_wish;
+            for (i=0; i<64; i++) { cboard->cells_highlighted[i] = CELL_NONE; }
+
+            /* show legal moves */
+            if (cboard->cell_selected != CELL_NONE) {
+                Move m;
+                m.from_rank = CELLY(cboard->cell_highlighted);
+                m.from_file = CELLX(cboard->cell_highlighted);
+                while (get_next_legal_move(cboard->bitboard, &m)) {
+                    cboard->cells_highlighted[CELL(m.to_file, m.to_rank)] = 1;
+                }
+            }
 		}
 		else {
 			if(CELL_NONE != cboard->cell_selected) {
 				/* opponent pawn selected -- take */
-				chessboard_clear_cell(cboard, cell_wish);
-				Pawn *taker = get_pawn(cboard, cboard->cell_selected);
-				chessboard_clear_cell(cboard, cboard->cell_selected);
-				chessboard_place_pawn(cboard, taker, cell_wish);;
-				cboard->cell_selected = CELL_NONE;
-				flip_turn(cboard);
+                Move m;
+                m.from_rank = CELLY(cboard->cell_selected);
+                m.from_file = CELLX(cboard->cell_selected);
+                m.to_rank = CELLY(cell_wish);
+                m.to_file = CELLX(cell_wish);
+                if (is_legal_move(cboard->bitboard, &m)) {
+                    /* bitboard */
+                    bitboard_do_move(cboard->bitboard, &m);                
+
+                    /* gui */
+                    chessboard_clear_cell(cboard, cell_wish);
+                    Pawn *taker = get_pawn(cboard, cboard->cell_selected);
+                    chessboard_clear_cell(cboard, cboard->cell_selected);
+                    chessboard_place_pawn(cboard, taker, cell_wish);;
+                    cboard->cell_selected = CELL_NONE;
+                    flip_turn(cboard);
+                }
 			}
+            for (i=0; i<64; i++) { cboard->cells_highlighted[i] = CELL_NONE; }
 		}
 	}
 	else {
 		/* empty cell selected */
 		if(CELL_NONE != cboard->cell_selected) {
-			/* move */
-			Pawn *mover = get_pawn(cboard, cboard->cell_selected);
-		    chessboard_clear_cell(cboard, cboard->cell_selected);
-			chessboard_place_pawn(cboard, mover, cell_wish);;
-		    flip_turn(cboard);
+			/* move in empty cell */
+            Move m;
+            m.from_rank = CELLY(cboard->cell_selected);
+            m.from_file = CELLX(cboard->cell_selected);
+            m.to_rank = CELLY(cell_wish);
+            m.to_file = CELLX(cell_wish);
+            if (is_legal_move(cboard->bitboard, &m)) {
+                /* bitboard */
+                bitboard_do_move(cboard->bitboard, &m);                
+
+                /* gui */
+                Pawn *mover = get_pawn(cboard, cboard->cell_selected);
+                chessboard_clear_cell(cboard, cboard->cell_selected);
+                chessboard_place_pawn(cboard, mover, cell_wish);;
+                flip_turn(cboard);
+            }
 		}
 		cboard->cell_selected = CELL_NONE;
+        for (i=0; i<64; i++) { cboard->cells_highlighted[i] = CELL_NONE; }
 	}
+
 }
 
 void chessboard_clear_cell(Chessboard *cboard, int cell)
