@@ -90,25 +90,36 @@ Chessboard * create_chessboard()
 	return cboard;
 }
 
-void chessboard_place_pawn(Chessboard *cboard, Pawn *p, int cell) {
-	/* invert the position of the pieces along the y-axis */
 
+void chessboard_set_piece_at_cell(Chessboard *cboard, Pawn *p, int cell)
+{
+	/* invert the position of the pieces along the y-axis */
 	p->pos[0] = ((GLdouble)CELLX(cell)/NUM_CELLS) - 0.5f + cboard->cell_width/2;
 	p->pos[1] = 0;
 	p->pos[2] = ((GLdouble)(NUM_CELLS-CELLY(cell)-1)/NUM_CELLS) - 0.5f + cboard->cell_height/2;
+}
 
+void chessboard_place_pawn(Chessboard *cboard, Pawn *p, int cell)
+{
+    chessboard_set_piece_at_cell(cboard, p, cell);
 	cboard->board[cell] = p;
 }
 
-void highlight_cell(Chessboard* c, int x, int y) {
+void highlight_cell(Chessboard* c, int x, int y)
+{
     c->cell_highlighted = CELL(x,y);
 }
 
-Pawn *get_pawn(Chessboard* c, int cell) {
-	return c->board[cell];
+Pawn *get_pawn(Chessboard* c, int cell)
+{
+    void *p = get_piece_addr(c->bitboard, _FILE(cell), _RANK(cell));
+    if (p) {
+        return *((Pawn **) p);
+    }
 }
 
-void display_chessboard(Chessboard *cboard) {
+void display_chessboard(Chessboard *cboard)
+{
     glPushMatrix();
     glTranslatef(cboard->pos[0], cboard->pos[1], cboard->pos[2]);
     GLdouble x, y;
@@ -168,8 +179,10 @@ void display_chessboard(Chessboard *cboard) {
     		glEnd();
 
 			/* draw pawn at cell */
-			Pawn *pawn = get_pawn(cboard, CELL(xcell, ycell));
-			if (pawn) {
+            void *p = get_piece_addr(cboard->bitboard, xcell, ycell);
+			if (p != NULL) {
+                Pawn *pawn = *((Pawn **) p);
+                chessboard_set_piece_at_cell(cboard, pawn, CELL(xcell, ycell));
 				display_pawn(pawn, 
 					CELL(xcell, ycell) == cboard->cell_selected ? PAWN_SELECTED 
 																: PAWN_NORMAL
@@ -216,6 +229,8 @@ void flip_turn(Chessboard *cboard) {
 
 void select_cell(Chessboard *cboard, int cell)
 {
+    Move m;
+    m.promote_to = PIECE_NONE;
     int i;
 	int cell_wish = cell == CELL_CURRENT ? cboard->cell_highlighted : cell;
 	Pawn *p = get_pawn(cboard, cell_wish);
@@ -227,7 +242,6 @@ void select_cell(Chessboard *cboard, int cell)
 
             /* show legal moves */
             if (cboard->cell_selected != CELL_NONE) {
-                Move m;
                 m.from_rank = CELLY(cboard->cell_highlighted);
                 m.from_file = CELLX(cboard->cell_highlighted);
                 while (get_next_legal_move(cboard->bitboard, &m)) {
@@ -238,7 +252,6 @@ void select_cell(Chessboard *cboard, int cell)
 		else {
 			if(CELL_NONE != cboard->cell_selected) {
 				/* opponent pawn selected -- take */
-                Move m;
                 m.from_rank = CELLY(cboard->cell_selected);
                 m.from_file = CELLX(cboard->cell_selected);
                 m.to_rank = CELLY(cell_wish);
@@ -247,12 +260,6 @@ void select_cell(Chessboard *cboard, int cell)
                     /* bitboard */
                     bitboard_do_move(cboard->bitboard, &m);                
 
-                    /* gui */
-                    chessboard_clear_cell(cboard, cell_wish);
-                    Pawn *taker = get_pawn(cboard, cboard->cell_selected);
-                    chessboard_clear_cell(cboard, cboard->cell_selected);
-                    chessboard_place_pawn(cboard, taker, cell_wish);;
-                    cboard->cell_selected = CELL_NONE;
                     flip_turn(cboard);
                 }
 			}
@@ -263,7 +270,6 @@ void select_cell(Chessboard *cboard, int cell)
 		/* empty cell selected */
 		if(CELL_NONE != cboard->cell_selected) {
 			/* move in empty cell */
-            Move m;
             m.from_rank = CELLY(cboard->cell_selected);
             m.from_file = CELLX(cboard->cell_selected);
             m.to_rank = CELLY(cell_wish);
@@ -272,10 +278,6 @@ void select_cell(Chessboard *cboard, int cell)
                 /* bitboard */
                 bitboard_do_move(cboard->bitboard, &m);                
 
-                /* gui */
-                Pawn *mover = get_pawn(cboard, cboard->cell_selected);
-                chessboard_clear_cell(cboard, cboard->cell_selected);
-                chessboard_place_pawn(cboard, mover, cell_wish);;
                 flip_turn(cboard);
             }
 		}
