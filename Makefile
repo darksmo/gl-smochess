@@ -1,5 +1,5 @@
 INC = -I./src -I./src/lib/chess_smoengine/headers
-LDFLAGS = $(INC) -L/usr/X11R6/lib -L./src/lib -lGL -lGLU -lglut -lm -lchess_smoengine
+LDFLAGS = $(INC) -fnested-functions -L/usr/X11R6/lib -L./src/lib -lpthread -lGL -lGLU -lglut -lm -lchess_smoengine -O3
 CC = gcc
 
 main: clean

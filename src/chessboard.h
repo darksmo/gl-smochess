@@ -6,6 +6,7 @@
 
 #include "pawn.h"
 #include "bitboard.h"
+#include "engine.h"
 
 #ifndef CHESSBOARD_h
 #define CHESSBOARD_h
@@ -57,10 +58,16 @@ void highlight_cell_up(Chessboard *cboard);
 void highlight_cell_down(Chessboard *cboard);
 void highlight_cell_left(Chessboard *cboard);
 void highlight_cell_right(Chessboard *cboard);
-void select_cell(Chessboard *cboard, int cell);
+void select_cell(Chessboard *cboard, int cell, char key);
 
 void chessboard_place_pawn(Chessboard *cboard, Pawn *pawn, int cell);
 void chessboard_clear_cell(Chessboard *cboard, int cell);
+
+/* 
+ * chessboard_ready: to be called after the pawns have been placed on the
+ * initial chessboard. This procedure initializes the internal bitboard based
+ * on the pawn placed on the 3d chessboard.
+ */
 void chessboard_ready(Chessboard *cboard);
 
 #endif

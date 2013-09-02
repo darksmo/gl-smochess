@@ -36,6 +36,8 @@ GLfloat lightPositionB[4] = {  100.0f, 100.0f,  100.0f, 1.0f };
 
 /* the viewer */
 Viewer *viewer;
+Viewer *opponent;
+Viewer *observer;
 
 void init() {
     /* the chessboard and the table and the player (viewer)*/
@@ -46,6 +48,14 @@ void init() {
 	place_on_model(chessboard->pos, (Placeable *) table);
 
 	viewer = create_viewer((Placeable *)chessboard);
+	opponent = create_viewer((Placeable *)chessboard);
+    observer = viewer;
+
+    /* move the opponent on the other end of the chessboard */
+    viewer->pos[1] -= 0.25f;
+    viewer->pos[2] += 0.8f;
+    opponent->pos[1] -= 0.25f;
+    opponent->pos[2] -= 0.8f;
 
 	/* the chess set */
 	int player, i;
@@ -102,6 +112,7 @@ void init() {
 void end() {
 	destroy_chessboard(chessboard);
 	destroy_viewer(viewer);
+	destroy_viewer(opponent);
 }
 
 void display() {
@@ -121,10 +132,13 @@ void display() {
    glLightfv(GL_LIGHT1, GL_SPECULAR, specularLightB);
    glLightfv(GL_LIGHT1, GL_POSITION, lightPositionB);
    
-   observe_from_viewer(viewer);
+   observe_from_viewer(observer);
 
    display_table(table);
    display_chessboard(chessboard);
+   if (observer == viewer) {
+       display_viewer(opponent);
+   }
 
    glFlush();
    glutSwapBuffers();
@@ -145,22 +159,27 @@ void timer(int extra) {
 }
 
 void keypressed(unsigned char key, int x, int y) {
-	if (key == 's') { viewer->pos[2]+=0.05; }
-	if (key == 'w') { viewer->pos[2]-=0.05; }
-	if (key == 'a') { viewer->pos[0]-=0.05; }
-	if (key == 'd') { viewer->pos[0]+=0.05; }
+	if (key == 's') { observer->pos[2]+=0.05; }
+	if (key == 'w') { observer->pos[2]-=0.05; }
+	if (key == 'q') { observer->pos[1]-=0.05; }
+	if (key == 'e') { observer->pos[1]+=0.05; }
+	if (key == 'a') { observer->pos[0]-=0.05; }
+	if (key == 'd') { observer->pos[0]+=0.05; }
 	if (key == 'f') { highlight_cell_left(chessboard); }
 	if (key == 'g') { highlight_cell_down(chessboard); }
 	if (key == 'h') { highlight_cell_right(chessboard); }
 	if (key == 't') { highlight_cell_up(chessboard); }
-	if (key == 'p') { select_cell(chessboard, CELL_CURRENT); }
+	if (key == 'p') { select_cell(chessboard, CELL_CURRENT, key); }
+	if (key == '0') { select_cell(chessboard, CELL_CURRENT, key); }
+	if (key == '1') { observer = viewer; }
+	if (key == '2') { observer = opponent; }
     if (key == 'x') { exit(0); }
 }
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	glutInitWindowSize (800, 800);
+	glutInitWindowSize (1200, 800);
 	glutInitWindowPosition (100,100);
 	glutCreateWindow ("gl-smochess");
 	glutDisplayFunc(display);
