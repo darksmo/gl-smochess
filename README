@@ -1,7 +1,7 @@
 3D chess program in OpenGl and C
 [![perl dark](https://github.com/altercation/solarized/raw/master/img/screen-perl-dark-th.png)](https://github.com/altercation/solarized/raw/master/img/screen-perl-dark.png)
 
-[![Screenshot of the current state of the project](/gl-smochess.png)]("Screenshot")
+[![Screenshot of the current state of the project](https://github.com/darksmo/gl-smochess/blob/master/gl-smochess.png)](Screenshot)
 
 - compile: make
 - run: ./chessboard
