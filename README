@@ -1,5 +1,4 @@
 3D chess program in OpenGl and C
-[![perl dark](https://github.com/altercation/solarized/raw/master/img/screen-perl-dark-th.png)](https://github.com/altercation/solarized/raw/master/img/screen-perl-dark.png)
 
 [![Screenshot of the current state of the project](https://github.com/darksmo/gl-smochess/blob/master/gl-smochess.png)](Screenshot)
 
@@ -8,18 +7,18 @@
 
 Move around the chessboard using the keys:
 
-              .---- forward
-camera down - q w e --- camera up
-     left --- a s d --- right
-                '
-                `---- backward
+                            .---- forward
+              camera down - q w e --- camera up
+                   left --- a s d --- right
+                              '
+                              `---- backward
 
 Highlight cells:
-             .---- forward
-            t 
- left --- f g h --- right
-            '
-             `---- backward
+                           .---- forward
+                          t 
+               left --- f g h --- right
+                          '
+                           `---- backward
 
 Select pawn: p
 
