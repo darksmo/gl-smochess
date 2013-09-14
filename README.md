@@ -1,6 +1,6 @@
-3D chess program in OpenGl and C
+**3D chess program in OpenGl and C**
 
-[![Screenshot of the current state of the project](https://github.com/darksmo/gl-smochess/blob/master/gl-smochess.png)](Screenshot)
+![Screenshot of the current state of the project](gl-smochess.png)
 
 - compile: make
 - run: ./chessboard
@@ -14,11 +14,12 @@ Move around the chessboard using the keys:
                               `---- backward
 
 Highlight cells:
-                           .---- forward
-                          t 
-               left --- f g h --- right
-                          '
-                           `---- backward
+
+                              .---- forward
+                              t
+                   left --- f g h --- right
+                              '
+                              `---- backward
 
 Select pawn: p
 
